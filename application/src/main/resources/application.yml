@@ -26,11 +26,12 @@ swagger:
 #  sessionManager:
 #    sessionIdUrlRewritingEnabled: false
 git:
-  userName: rayduan
-  password: dsfsdf2323
+  userName: test
+  password: test
+  branch: master
   local:
     base:
-      dir: D:\git-test
+      dir: D:\Project
 svn:
   userName: admin
   password: 123456

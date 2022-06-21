@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.runtime.tree.TreeParser;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -47,19 +48,20 @@ public class GitRepoUtil {
      * @throws GitAPIException
      * @throws IOException
      */
-    public static Git cloneRepository(String gitUrl, String codePath, String commitId,String gitUserName,String gitPassWord) {
+    public static Git cloneRepository(String gitUrl, String codePath, String branch, String commitId, String gitUserName, String gitPassWord) {
         Git git = null;
         try {
-            if (!checkGitWorkSpace(gitUrl, codePath)) {
+            if (!checkGitWorkSpace(gitUrl, codePath))
+            {
                 LoggerUtil.info(log, "本地代码不存在，clone", gitUrl, codePath);
                 git = Git.cloneRepository()
                         .setURI(gitUrl)
                         .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord))
                         .setDirectory(new File(codePath))
-                        .setBranch(commitId)
+                        .setBranch(branch)
                         .call();
                 // 下载指定commitId/branch
-                git.checkout().setName(commitId).call();
+//                git.checkout().setName(commitId).call();
             } else {
                 LoggerUtil.info(log, "本地代码存在,直接使用", gitUrl, codePath);
                 git = Git.open(new File(codePath));
@@ -70,6 +72,8 @@ public class GitRepoUtil {
                     git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord)).call();
                 }
             }
+            // git reset --hard to switch to specific commit
+            git.reset().setRef(commitId).setMode(ResetCommand.ResetType.HARD).call();
         } catch (IOException | GitAPIException e) {
             if(e instanceof GitAPIException){
                 throw new BizException(BizCode.GIT_AUTH_FAILED.getCode(), e.getMessage());
@@ -79,7 +83,6 @@ public class GitRepoUtil {
         }
         return git;
     }
-
 
     /**
      * 将代码转成树状
@@ -119,7 +122,10 @@ public class GitRepoUtil {
      */
     public static Boolean checkGitWorkSpace(String gitUrl, String codePath) throws IOException {
         Boolean isExist = Boolean.FALSE;
-        File repoGitDir = new File(codePath + "/.git");
+//        File repoGitDir = new File(codePath + "/.git");
+//        File repoGitDir = new File(codePath + File.separator + ".git");
+
+        File repoGitDir = new File(codePath + File.separator + ".git");
         if (!repoGitDir.exists()) {
             return isExist;
         }
@@ -153,13 +159,15 @@ public class GitRepoUtil {
         if (Strings.isNullOrEmpty(repoUrl)) {
             return "";
         }
-        localDir.append("/");
+//        localDir.append("/");
+        localDir.append(File.separator);
         String repoName = Splitter.on("/")
                 .splitToStream(repoUrl).reduce((first, second) -> second)
                 .map(e -> Splitter.on(".").splitToStream(e).findFirst().get()).get();
         localDir.append(repoName);
         if(!StringUtils.isEmpty(version)){
-            localDir.append("/");
+//            localDir.append("/");
+            localDir.append(File.separator);
             localDir.append(version);
         }
         return localDir.toString();

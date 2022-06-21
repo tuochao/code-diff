@@ -70,9 +70,11 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
             super.versionControlDto.setNewLocalBasePath(localNowRepoDir);
             super.versionControlDto.setOldLocalBasePath(localBaseRepoDir);
             //原有代码git对象
-            Git baseGit = GitRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, super.versionControlDto.getBaseVersion(), customizeConfig.getGitUserName(), customizeConfig.getGitPassWord());
+            Git baseGit = GitRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, customizeConfig.getGitBranch(),
+                    super.versionControlDto.getBaseVersion(), customizeConfig.getGitUserName(), customizeConfig.getGitPassWord());
             //现有代码git对象
-            Git nowGit = GitRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localNowRepoDir, super.versionControlDto.getNowVersion(), customizeConfig.getGitUserName(), customizeConfig.getGitPassWord());
+            Git nowGit = GitRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localNowRepoDir, customizeConfig.getGitBranch(),
+                    super.versionControlDto.getNowVersion(), customizeConfig.getGitUserName(), customizeConfig.getGitPassWord());
             AbstractTreeIterator baseTree = GitRepoUtil.prepareTreeParser(baseGit.getRepository(), super.versionControlDto.getBaseVersion());
             AbstractTreeIterator nowTree = GitRepoUtil.prepareTreeParser(nowGit.getRepository(), super.versionControlDto.getNowVersion());
             //获取两个版本之间的差异代码

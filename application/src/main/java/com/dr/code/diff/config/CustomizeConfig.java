@@ -31,6 +31,12 @@ public class CustomizeConfig {
     private String gitPassWord;
 
     /**
+     * git分支
+     */
+    @Value(value = "${git.branch}")
+    private String gitBranch;
+
+    /**
      * git下载代码到本地的根目录
      */
     @Value(value = "${git.local.base.dir}")

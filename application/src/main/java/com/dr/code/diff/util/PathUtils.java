@@ -4,6 +4,9 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
+import java.util.regex.Matcher;
+
 /**
  * @ProjectName: code-diff-parent
  * @Package: com.dr.code.diff.util
@@ -24,8 +27,10 @@ public class PathUtils {
      */
     public static String getClassFilePath(String baseDir, String classPath) {
         StringBuilder builder = new StringBuilder(baseDir);
-        builder.append("/");
-        builder.append(classPath);
+//        builder.append("/");
+//        builder.append(classPath);
+        builder.append(File.separator);
+        builder.append(classPath.replaceAll("/", Matcher.quoteReplacement(File.separator)));
         return builder.toString();
     }
 
